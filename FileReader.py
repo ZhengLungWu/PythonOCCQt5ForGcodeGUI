@@ -12,53 +12,80 @@ class Gtype():
     G54=54
     G55=55
     G56=56
+    G57=57
+    G58=58
+    G59=59
     G90=90
     G91=91
-    G92=92
     Undef=-1
 class Planetype():
     G17='xy'
-    G18='yz'
-    G19='zx'
+    G18='zx'
+    G19='yz'
+    Undef=-1
+class OffsetWCS():
+    Sys54=0
+    Sys55=1
+    Sys56=2
+    Sys57=3
+    Sys58=4
+    Sys59=5
+    Undef=-1
+class OWCSData():
+    NR=OffsetWCS()
+    index=-1
+    def __init__(self,NR,index):
+        self.NR=NR
+        self.index=index
+    
+    
+
+class CWj():
+    CW=0
+    CCW=1
     Undef=-1
 
-class ARCCMD:
-    PlaneType=Planetype.Undef
-    GType=Gtype.Undef
-    G02on=True
+class ARCCMD_R:
+    PlaneType=Planetype()
+    #GType=Gtype.Undef
+    CWm=CWj()
+    ##G02on=True
     index=-1
     XP=0.0
     YP=0.0
     ZP=0.0
+    ##I=0.0
+    ##J=0.0
+    ##K=0.0
+    R=0.0
+
+    def __init__(self,PlaneType,CWm,index,R):
+        ##self.GType=GType
+        self.CWm=CWm
+        self.PlaneType=PlaneType
+        self.index=index
+        self.R=R      
+  
+class ARCCMD_IJK:
+    PlaneType=Planetype()
+    ##GType=Gtype.Undef
+    CWm=CWj()
+    ##G02on=True
+    index=-1
     I=0.0
     J=0.0
     K=0.0
-    R=0.0
-    
-    def __init__(self,PlaneType,G02on,index,XP,YP,ZP,I,J,K,R):
+    ##R=0.0
+
+    def __init__(self,PlaneType,CWm,index,I,J,K):
+        ##self.GType=GType
+        self.CWm=CWm
         self.PlaneType=PlaneType
-        self.G02on=G02on
         self.index=index
-        self.XP=XP
-        self.YP=YP
-        self.ZP=ZP
         self.I=I
         self.J=J
         self.K=K
-        self.R=R
-    def __init__ (self,PlaneType,GType,index,XP,YP,ZP,I,J,K,R):
-        self.GType=GType
-        self.PlaneType=PlaneType
-        self.index=index
-        self.XP=XP
-        self.YP=YP
-        self.ZP=ZP
-        self.I=I
-        self.J=J
-        self.K=K
-        self.R=R
-        
-        
+          
 
 
 
@@ -68,13 +95,21 @@ class Reader:
     ##G01Line=array('i')
     G02Line=[]
     G03Line=[]
+    G54Line=[]
+    G55Line=[]
+    G56Line=[]
+    G57Line=[]
+    G58Line=[]
+    G59Line=[]
     GType=Gtype.Undef
-    PlaneType=Planetype.Undef
+    PlaneType=Planetype()
     ABSMode=True
     WPCSetting=False
     ABSPOS=[]
     INCREC=[]
-    ARCREC=[]
+    G02REC=[]
+    G03REC=[]
+    OffsetWPCSdata=[]
 
     def ExamNum(self,char):
         for i in range(10):
@@ -155,8 +190,12 @@ class Reader:
                                    if alltext[i][j+1]=='0':
                                        if alltext[i][j+2]=='0':
                                            self.G00Line.append(i)
+                                           G03on=False
+                                           G02on=False
                                        elif alltext[i][j+2]=='1':
                                            self.G01Line.append(i)
+                                           G03on=False
+                                           G02on=False
                                        elif alltext[i][j+2]=='2':
                                            self.G02Line.append(i)
                                            G02on=True
@@ -165,25 +204,65 @@ class Reader:
                                            self.G03Line.append(i)
                                            G03on=True
                                            G02on=False
+                                       elif alltext[i][j+2]==' ':
+                                           self.G00Line.append(i)
+                                           G03on=False
+                                           G02on=False
                                    elif alltext[i][j+1]=='1':
                                        if alltext[i][j+2]=='7':
-                                           GType=Gtype.G17
-                                           PlaneType=Planetype.G17
+                                           ##GType=Gtype.G17
+                                           self.PlaneType=Planetype.G17
                                            
                                        elif alltext[i][j+2]=='8':
-                                           GType=Gtype.G18
-                                           PlaneType=Planetype.G18
+                                           ##GType=Gtype.G18
+                                           self.PlaneType=Planetype.G18
                                        elif alltext[i][j+2]=='9':
-                                           GType=Gtype.G19
-                                           PlaneType=Planetype.G19
-                                ## elif alltext[i][j+1]=='2':
+                                           ##GType=Gtype.G19
+                                           self.PlaneType=Planetype.G19
+                                       elif alltext[i][j+2]==' ':
+                                           self.G01Line.append(i)
+                                   elif alltext[i][j+1]=='2':
+                                       if alltext[i][j+2]==' ':
+                                           G02on=True
+                                           G03on=False
+                                           self.G02Line.append(i)
+                                   elif alltext[i][j+1]=='3':
+                                       if alltext[i][j+2]==' ':
+                                           G03on=True
+                                           G02on=False
+                                           self.G03Line.append(i)
                                    elif alltext[i][j+1]=='5':
                                        if alltext[i][j+2]=='4':
-                                           GType=Gtype.G54
+                                           self.WPCSetting=True
+                                          ## GType=Gtype.G54
+                                           data=OWCSData(OffsetWCS.Sys54,i)
+                                           self.OffsetWPCSdata.append(data)
+                                           
                                        elif alltext[i][j+2]=='5':
-                                           GType=Gtype.G55
+                                           self.WPCSetting=True
+                                           ##GType=Gtype.G55
+                                           data=OWCSData(OffsetWCS.Sys55,i)
+                                           self.OffsetWPCSdata.append(data)
                                        elif alltext[i][j+2]=='6':
-                                           GType=Gtype.G56
+                                           self.WPCSetting=True
+                                           ##GType=Gtype.G56
+                                           data=OWCSData(OffsetWCS.Sys56,i)
+                                           self.OffsetWPCSdata.append(data)
+                                       elif alltext[i][j+2]=='7':
+                                           self.WPCSetting=True
+                                           ##GType=Gtype.G57
+                                           data=OWCSData(OffsetWCS.Sys57,i)
+                                           self.OffsetWPCSdata.append(data)
+                                       elif alltext[i][j+2]=='8':
+                                           self.WPCSetting=True
+                                           ##GType=Gtype.G58
+                                           data=OWCSData(OffsetWCS.Sys58,i)
+                                           self.OffsetWPCSdata.append(data)
+                                       elif alltext[i][j+2]=='9':
+                                           self.WPCSetting=True
+                                           ##GType=Gtype.G59
+                                           data=OWCSData(OffsetWCS.Sys59,i)
+                                           self.OffsetWPCSdata.append(data)
                                    elif alltext[i][j+1]=='9':
                                        if alltext[i][j+2]=='0':
                                            GType=Gtype.G90
@@ -193,7 +272,7 @@ class Reader:
                                            ABSmode=False
                                        elif alltext[i][j+2]=='2':
                                            GType=Gtype.G92
-                                           WPCSetting=True
+                                           ##WPCSetting=True
                                 
                 SpaceXrec=-1
                 SpaceYrec=-1
@@ -313,6 +392,13 @@ class Reader:
                         destK=destK+alltext[i][indexofK+1+k]  ##deal as string
                     
                     ValK=float(destK)
+                if indexofI!=-1 and indexofJ!=-1 and indexofK==-1:
+                    self.PlaneType=Planetype.G17
+                elif indexofK!=-1 and indexofJ!=-1 and indexofI==-1:
+                    self.PlaneType=Planetype.G19
+                elif indexofK!=-1 and indexofI!=-1 and indexofJ==-1:
+                    self.PlaneType=Planetype.G18    
+                    
 
                 SpaceRrec=-1
                 ValR=0.0
@@ -391,12 +477,23 @@ class Reader:
                         self.ABSPOS.append(TEMP)
                         self.INCREC.append(coors)
 
-                if self.GType==Gtype.G02:
-                   G02CMD=ARCCMD(self.GType,PlaneType,i,ValX,ValY,ValZ,ValI,ValJ,ValK,ValR)
-                   self.ARCREC.append(G02CMD)
-                elif self.GType==Gtype.G03:
-                    G03CMD=ARCCMD(self.GType,PlaneTyepe,ValX,ValY,ValZ,ValI,ValJ,ValK,ValR)
-                    self.ARCREC.append(G03CMD)
+                if G02on==True:
+                    cw=CWj()
+                   
+                    if indexofR==-1:
+                        G02CMD=ARCCMD_IJK(self.PlaneType,cw.CW,i,ValI,ValJ,ValK)
+                    else:
+                        G02CMD=ARCCMD_R(self.PlaneType,cw.CW,i,ValR)
+                    self.G02REC.append(G02CMD)
+                elif G03on==True:
+                    cw=CWj()
+                   
+                    if indexofR==-1:
+                        G03CMD=ARCCMD_IJK(self.PlaneType,cw.CCW,i,ValI,ValJ,ValK)
+                    else:
+       
+                        G03CMD=ARCCMD_R(self.PlaneType,cw.CCW,i,ValR)
+                    self.G03REC.append(G03CMD)
                             
 
      
@@ -408,3 +505,6 @@ if __name__=='__main__':
 
     d=Reader(a)
     print(d.ABSPOS)
+    print(d.INCREC)
+    print(d.G02Line)
+    print(d.G02REC[0].PlaneType)
