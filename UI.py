@@ -34,7 +34,9 @@ class Example(QMainWindow):
         if fname[0]:
             f=open(fname[0],'r')
             reader=FileReader.Reader(fname[0])
-            OCCGUI.DisplayLines(reader.ABSPOS)
+            #OCCGUI.DisplayLines(reader.ABSPOS)
+            print(reader.ABSPOS)
+            g=OCCGUI.ShowGPath(reader)
 
             with f:
                 data=f.read()
