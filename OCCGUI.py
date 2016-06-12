@@ -1,12 +1,12 @@
 from OCC.GeomAPI import GeomAPI_PointsToBSpline
 from OCC.TColgp import TColgp_Array1OfPnt
 import math
-
+#import UI
 
 ##display, start_display, add_menu, add_function_to_menu = init_display()
 from OCC.Display.SimpleGui import init_display
-from OCC.gp import gp_Pnt, gp_Dir
-from OCC.Geom import Geom_Line
+from OCC.gp import gp_Pnt
+#from OCC.Geom import Geom_Line
 from OCC.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
 from FileReader import Reader
 
@@ -78,14 +78,20 @@ class Display:
 
             array=TColgp_Array1OfPnt(1,30)
             if pty=='xy':
-                for i in range(30):
-                    array.SetValue(i+1,gp_Pnt(radius*math.cos(startA+dis*i),radius*math.sin(startA+dis*i),coor1[2]))
+                for i in range(29):
+                    array.SetValue(i+1,gp_Pnt(radius*math.cos(startA+dis*i)+center[0],radius*math.sin(startA+dis*i)+center[1],coor1[2]))
+                array.SetValue(30,gp_Pnt(radius*math.cos(endA)+center[0],radius*math.sin(endA)+center[1],coor1[2]))
+
             elif pty=='zx':
-                for i in range(30):
-                    array.SetValue(i+1,gp_Pnt(radius*math.sin(startA+dis*i),coor1[1],radiud*math.cos(startA+dis*i)))
+                for i in range(29):
+                    array.SetValue(i+1,gp_Pnt(radius*math.sin(startA+dis*i)+center[1],coor1[1],radiud*math.cos(startA+dis*i)+center[0]))
+                array.SetValue(30,gp_Pnt(radius*math.sin(endA)+center[1],coor1[1],radiud*math.cos(endA)+center[0]))
+
             elif pty=='yz':
-                for i in range(30):
-                    array.SetValue(i+1,gp_Pnt(coor1[0],radiud*math.cos(startA+dis*i),radius*math.sin(startA+dis*i)))
+                for i in range(29):
+                    array.SetValue(i+1,gp_Pnt(coor1[0],radiud*math.cos(startA+dis*i)+center[0],radius*math.sin(startA+dis*i)+center[1]))
+                array.SetValue(30,gp_Pnt(coor1[0],radiud*math.cos(endA)+center[0],radius*math.sin(endA)+center[1]))
+
             bspline2 = GeomAPI_PointsToBSpline(array).Curve()
             path_edge = BRepBuilderAPI_MakeEdge(bspline2).Edge()
             display.DisplayColoredShape(path_edge,'RED')
@@ -97,22 +103,28 @@ class Display:
             radius=f[2]
             startA=f[3]
             endA=f[4]
-            if endA-startA>=0:
-                endA=-2*math.pi+endA
+            if endA-startA<=0:
+                startA=-2*math.pi+startA
 
             dis=endA-startA
             dis=dis/30
 
             array=TColgp_Array1OfPnt(1,30)
             if pty=='xy':
-                for i in range(30):
-                    array.SetValue(i+1,gp_Pnt(radius*math.cos(startA+dis*i),radius*math.sin(startA+dis*i),coor1[2]))
+                for i in range(29):
+                    array.SetValue(i+1,gp_Pnt(radius*math.cos(startA+dis*i)+center[0],radius*math.sin(startA+dis*i)+center[1],coor1[2]))
+                array.SetValue(30,gp_Pnt(radius*math.cos(endA)+center[0],radius*math.sin(endA)+center[1],coor1[2]))
+
             elif pty=='zx':
-                for i in range(30):
-                    array.SetValue(i+1,gp_Pnt(radius*math.sin(startA+dis*i),coor1[1],radiud*math.cos(startA+dis*i)))
+                for i in range(29):
+                    array.SetValue(i+1,gp_Pnt(radius*math.sin(startA+dis*i)+center[1],coor1[1],radiud*math.cos(startA+dis*i)+center[0]))
+                array.SetValue(30,gp_Pnt(radius*math.sin(endA)+center[1],coor1[1],radiud*math.cos(endA)+center[0]))
+
             elif pty=='yz':
-                for i in range(30):
-                    array.SetValue(i+1,gp_Pnt(coor1[0],radiud*math.cos(startA+dis*i),radius*math.sin(startA+dis*i)))
+                for i in range(29):
+                    array.SetValue(i+1,gp_Pnt(coor1[0],radiud*math.cos(startA+dis*i)+center[0],radius*math.sin(startA+dis*i)+center[1]))
+                array.SetValue(30,gp_Pnt(coor1[0],radiud*math.cos(endA)+center[0],radius*math.sin(endA)+center[1]))
+
             bspline2 = GeomAPI_PointsToBSpline(array).Curve()
             path_edge = BRepBuilderAPI_MakeEdge(bspline2).Edge()
             display.DisplayColoredShape(path_edge,'BLUE')                             

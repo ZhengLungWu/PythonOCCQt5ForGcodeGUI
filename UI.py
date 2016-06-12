@@ -20,6 +20,7 @@ class Example(QMainWindow):
         openFile.setShortcut('Ctrl+O')
         openFile.setStatusTip('Open new file')
         openFile.triggered.connect(self.showDialog)
+        
 
         menubar=self.menuBar()
         fileMenu=menubar.addMenu('&File')
@@ -28,6 +29,7 @@ class Example(QMainWindow):
         self.setGeometry(300,300,350,300)
         self.setWindowTitle('file dialog')
         self.show()
+        
     def showDialog(self):
         fname=QFileDialog.getOpenFileName(self,'Open file','/home')
 
@@ -35,12 +37,13 @@ class Example(QMainWindow):
             f=open(fname[0],'r')
             reader=FileReader.Reader(fname[0])
             #OCCGUI.DisplayLines(reader.ABSPOS)
-            print(reader.ABSPOS)
+            #print(reader.ABSPOS)
             g=OCCGUI.ShowGPath(reader)
 
             with f:
                 data=f.read()
                 self.textEdit.setText(data)
+    
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)

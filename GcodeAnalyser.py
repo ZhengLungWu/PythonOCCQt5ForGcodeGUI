@@ -34,7 +34,7 @@ class G02EXE():
             startCoor=[]
             endCoor=[]
             R=ARCCMD.R
-           
+            print(R)
       
             if pty==Planetype.G17:
                   
@@ -68,12 +68,12 @@ class G02EXE():
                 r=-R
                 
             B=math.acos((len1/2)/r)
-            print(A,B)
+            #print(A,B)
 
             c1=[r*math.cos(A+B)+startCoor[0],r*math.sin(A+B)+startCoor[1]]
             c2=[r*math.cos(A-B)+startCoor[0],r*math.sin(A-B)+startCoor[1]]
-            print(c1)
-            print(c2)
+            #print(c1)
+            #print(c2)
 
             startInc1=[startCoor[0]-c1[0],startCoor[1]-c1[1]]
             startInc2=[startCoor[0]-c2[0],startCoor[1]-c2[1]]
@@ -82,8 +82,8 @@ class G02EXE():
             endInc2=[endCoor[0]-c2[0],endCoor[1]-c2[1]]
 
             startAng1=0.0
-            print(r)
-            print(startInc1[0])
+            #print(r)
+            #print(startInc1[0])
 
             a=math.acos(startInc1[0]/r)
             b=math.asin(startInc1[1]/r)
@@ -92,9 +92,9 @@ class G02EXE():
             elif a>=0 and b<=0:
                 startAng1=2*math.pi-a
             elif a<0 and b>0:
-                startAng1=math.pi-a
-            elif a<0 and b<0:
                 startAng1=math.pi+a
+            elif a<0 and b<0:
+                startAng1=math.pi-a
 
             startAng2=0.0    
 
@@ -105,9 +105,9 @@ class G02EXE():
             elif a>=0 and b<=0:
                 startAng2=2*math.pi-a
             elif a<0 and b>0:
-                startAng2=math.pi-a
+                startAng2=math.pi+a
             elif a<0 and b<0:
-                startAng2=math.pi+a    
+                startAng2=math.pi-a    
 
             endAng1=0.0
             print(endInc1[0])
@@ -119,9 +119,9 @@ class G02EXE():
             elif a>=0 and b<=0:
                 endAng1=2*math.pi-a
             elif a<0 and b>0:
-                endAng1=math.pi-a
-            elif a<0 and b<0:
                 endAng1=math.pi+a
+            elif a<0 and b<0:
+                endAng1=math.pi-a
 
             endAng2=0.0    
 
@@ -132,9 +132,9 @@ class G02EXE():
             elif a>=0 and b<=0:
                 endAng2=-a
             elif a<0 and b>0:
-                endAng2=math.pi-a
-            elif a<0 and b<0:
                 endAng2=math.pi+a
+            elif a<0 and b<0:
+                endAng2=math.pi-a
 
             if R>0:
                 if endAng1-startAng1>0 and endAng1-startAng1<math.pi: 

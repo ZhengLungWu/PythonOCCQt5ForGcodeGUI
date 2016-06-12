@@ -398,7 +398,8 @@ class Reader:
                     self.PlaneType=Planetype.G19
                 elif indexofK!=-1 and indexofI!=-1 and indexofJ==-1:
                     self.PlaneType=Planetype.G18    
-                    
+               # elif indexofK==-1 and indexofI==-1 and indexofJ==-1:
+                #    self.PlaneType=Planetype.Undef
 
                 SpaceRrec=-1
                 ValR=0.0
